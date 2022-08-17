@@ -17,7 +17,10 @@ class common:
         self.current_price =  self.coinbot.get_current_price()
 
     def update_df(self):
-        self.dataframe = self.coinbot.get_old_data(1) #one day old data
+        temp = self.coinbot.get_old_data(2) #one day old data
+        self.dataframe = temp.iloc[0,:]
+
+        # self.dataframe = self.coinbot.get_old_data(1) #one day old data
 
 
 class moving_average(common):
@@ -28,6 +31,10 @@ class moving_average(common):
     def get_ma(self, day_length):
         df = self.coinbot.get_old_data(day_length)
         ma = df['close'].rolling(window = day_length, min_periods = 1).mean()
+        #
+        # dftemp = df.iloc[0,:]
+        # print(dftemp)
+        # print(dftemp.name)
 
         return ma
 
@@ -55,17 +62,20 @@ class LW_strategy(common):
 
 
     def prv_init(self):
-            time.sleep(0.02) #stablizer
-            self.update_df()
-            return self.set_target_price()
+        time.sleep(0.02) #stablizer
+        self.update_df()
+        return self.set_target_price()
 
 
     def time_checker(self):
-        time_tomorrow = (self.dataframe.index + datetime.timedelta(1))[0] #one day
+
+        time_tomorrow = (self.dataframe.name + datetime.timedelta(2)) #one day + old days
+
         time_now = datetime.datetime.today()
 
         if (time_now >= time_tomorrow): #if the data is older than one day
             return UP #let the loop know!
+
         return DOWN
 
 
@@ -75,10 +85,11 @@ class LW_strategy(common):
         close_price = self.dataframe['close']
 
         target_price =  close_price + (high_price - low_price) * self.K
-        self.target_price = round(target_price[0],4) #dataframe type to number
 
-        # ret_info = "***Target Price Set*** " + self.coinbot.name + " | HIGH:" + str(high_price[0]) + " | LOW:" + str(low_price[0]) + " | OPEN:" + str(close_price[0]) + " | TARGET:" + str(self.target_price)
-        ret_info = "**Target Price Set** " + self.coinbot.name + " | OPEN:" + str(close_price[0]) + " | TARGET:" + str(self.target_price)
+        self.target_price = round(target_price,4) #dataframe type to number
+
+        # ret_info = "***Target Price Set*** " + self.coinbot.name + " | HIGH:" + str(high_price) + " | LOW:" + str(low_price) + " | OPEN:" + str(close_price) + " | TARGET:" + str(self.target_price)
+        ret_info = "**Target Price Set** " + self.coinbot.name + " | OPEN:" + str(close_price) + " | TARGET:" + str(self.target_price)
         return ret_info
 
 
@@ -90,7 +101,9 @@ class LW_strategy(common):
             if(self.buyflag == UP): #if you bought anything,
                 self.get_current_price() #get
                 info = self.coinbot.sell_limit_order(self.current_price, self.buynumber) #sell everything with current price
-                ret_info = self.coinbot.name + " | SELLING: " + info
+                ret_info = self.coinbot.name + " | SELLING: " + str(info)
+                if (info == None):
+                    info = "sys fail"
                 self.buyflag = DOWN
                 return ret_info #report to the host
 
@@ -105,14 +118,18 @@ class LW_strategy(common):
             self.get_current_price()
 
             if (self.current_price >= self.target_price and self.buyflag == DOWN):
-
+            # if (1):
                 self.buynumber = self.coinbot.get_purchase_number(self.KRW) #get # of coins with krw.
                 info = self.coinbot.buy_limit_order(self.current_price, self.buynumber)
+
+                # info = self.coinbot.buy_limit_order(0.01, 500100)
+                # time.sleep(2)
+
 
                 if (info == None):
                     info = "sys fail"
 
-                ret_info = self.coinbot.name + " | BUYING: " + info
+                ret_info = self.coinbot.name + " | BUYING: " + str(info)
                 self.buyflag = UP
 
                 # buy only once in a day

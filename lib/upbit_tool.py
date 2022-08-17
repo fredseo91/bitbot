@@ -25,7 +25,7 @@ class coin(account):
         return self.upbit.get_balance(name)
 
     def get_current_price(self):
-        return float(self.upbit.get_current_price(self.name))
+        return float(pu.get_current_price(self.name))
 
     def get_current_balance(self):
         return self.get_my_balance(self.name)
@@ -49,6 +49,7 @@ class coin(account):
 
     def get_old_data(self, day_length):
         data =  pu.get_ohlcv(ticker=self.name, count = day_length)
+        # datatemp =  pu.get_ohlcv(ticker=self.name, count = day_length)
         return data
 
 
