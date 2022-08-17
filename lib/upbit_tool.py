@@ -16,11 +16,15 @@ class account():
     def get_my_balance(self, name):
         return self.upbit.get_balance(name)
 
+    def get_upbit_account(self):
+
+        return self.upbit
 
 class coin(account):
 
-    def __init__(self,name):
+    def __init__(self,name, upbit):
         self.name = name
+        self.upbit = upbit
 
     def get_current_price(self):
         return float(pu.get_current_price(self.name))

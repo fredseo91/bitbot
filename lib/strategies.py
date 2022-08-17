@@ -59,7 +59,8 @@ class LW_strategy():
 
         self.target_price = round(target_price[0],4) #dataframe type to number
 
-        ret_info = "***Target Price Set*** " + self.coinbot.name + " | HIGH:" + str(high_price[0]) + " | LOW:" + str(low_price[0]) + " | OPEN:" + str(close_price[0]) + " | TARGET:" + str(self.target_price)
+        # ret_info = "***Target Price Set*** " + self.coinbot.name + " | HIGH:" + str(high_price[0]) + " | LOW:" + str(low_price[0]) + " | OPEN:" + str(close_price[0]) + " | TARGET:" + str(self.target_price)
+        ret_info = "**Target Price Set** " + self.coinbot.name + " | OPEN:" + str(close_price[0]) + " | TARGET:" + str(self.target_price)
 
         return ret_info
 
@@ -97,17 +98,21 @@ class LW_strategy():
 
 
         else:
+
             self.get_current_price()
 
             if (self.current_price >= self.target_price and self.buyflag == DOWN):
 
                 self.buynumber = self.coinbot.get_purchase_number(self.MIN_KRW) #get # of coins with krw.
-
                 info = self.coinbot.buy_limit_order(self.current_price, self.buynumber)
+
+                if (info == None):
+                    info = "sys fail"
+
                 ret_info = self.coinbot.name + " | BUYING: " + info
                 self.buyflag = UP
-                # buy only once in a day
 
+                # buy only once in a day
                 return ret_info #report to the host
 
             return None
