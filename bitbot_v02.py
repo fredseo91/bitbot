@@ -13,6 +13,10 @@ UP = 1
 DOWN = 0
 INIT_FLAG = 0
 
+K = 0.5
+KRW = 10000 #5001 is too low
+
+
 
 token_list = token_info.get_tokens()
 access = token_list["access"]
@@ -26,23 +30,20 @@ upbit_account = coins.get_upbit_account()
 
 coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-CHZ"]
 
-num_coins = len(coin_name_list)
-coin_range = range(num_coins)
-
-
+coin_range = range(len(coin_name_list))
 coin_list = list(coin_range)
 
 for i in coin_range:
     coin_list[i] = ut.coin(coin_name_list[i], upbit_account)
 
 
-K = 0.5
-MIN_KRW = 10000 #5001 is too low
+
+
+
 
 bot_list = list(coin_range)
-
 for i in coin_range:
-    bot_list[i] = strategies.LW_strategy(coin_list[i], K, MIN_KRW)
+    bot_list[i] = strategies.LW_strategy(coin_list[i], KRW, K)
 
 
 

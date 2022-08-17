@@ -1,7 +1,7 @@
 import pyupbit as pu
 
 
-
+#need to fix the structure
 
 class account():
 
@@ -12,12 +12,7 @@ class account():
         self.secret = secret
         self.upbit = pu.Upbit(self.access, self.secret)
 
-
-    def get_my_balance(self, name):
-        return self.upbit.get_balance(name)
-
     def get_upbit_account(self):
-
         return self.upbit
 
 class coin(account):
@@ -26,8 +21,11 @@ class coin(account):
         self.name = name
         self.upbit = upbit
 
+    def get_my_balance(self, name):
+        return self.upbit.get_balance(name)
+
     def get_current_price(self):
-        return float(pu.get_current_price(self.name))
+        return float(self.upbit.get_current_price(self.name))
 
     def get_current_balance(self):
         return self.get_my_balance(self.name)
