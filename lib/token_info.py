@@ -17,6 +17,9 @@ def get_tokens():
                 if token in string:
                     temp = token + equal_string
                     string = string.replace(temp, "")
+                    string = string.replace("\n", "")
+                    string = string.replace('"', "")
+
                     token_return[token] = string
     return token_return
 

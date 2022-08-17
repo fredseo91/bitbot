@@ -1,43 +1,70 @@
-from lib import util as ut
+from lib import upbit_tool as ut
 from lib import coin_graph as graph
-from lib import control as ct
+from lib import strategies
 from lib import token_info
+from lib import slack_msg as sl
+
+
 
 import datetime
 import time
+
+UP = 1
+DOWN = 0
+INIT_FLAG = 0
 
 
 token_list = token_info.get_tokens()
 access = token_list["access"]
 secret = token_list["secret"]
+slack_token = token_list["slack_token"]
 
 
-test = ut.account(access, secret)
+slack = sl.slackbot("#bitbot", slack_token)
+coins = ut.account(access, secret)
 
 
+coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-CHZ"]
 
-coin = ut.coin("KRW-AHT")
-coin2 = ut.coin("KRW-ADA")
-coin3 = ut.coin("KRW-ETC")
+num_coins = len(coin_name_list)
+coin_range = range(num_coins)
+
+
+coin_list = list(coin_range)
+
+for i in coin_range:
+    coin_list[i] = ut.coin(coin_name_list[i])
 
 
 K = 0.7
-min_krw = 10000 #5001 is too low
+MIN_KRW = 100 #5001 is too low
 
-bot = ct.LW_strategy(coin, K)
-bot2 = ct.LW_strategy(coin2, K)
-bot3 = ct.LW_strategy(coin3, K)
+bot_list = list(coin_range)
+
+for i in coin_range:
+    bot_list[i] = strategies.LW_strategy(coin_list[i], K, MIN_KRW)
+
+
 
 while(1):
-    bot.loop(min_krw)
-    bot2.loop(min_krw)
-    bot3.loop(min_krw)
+
+    bot_msg = list(coin_range)
+
+    if (INIT_FLAG == DOWN):
+        INIT_FLAG = UP
+
+        for i in coin_range:
+            bot_msg[i] = bot_list[i].prv_init()
+            time.sleep(0.05)
 
 
-    time.sleep(0.2)
+    else:
+        for i in coin_range:
+            bot_msg[i] = bot_list[i].loop()
+            time.sleep(0.05)
 
 
 
+    slack.msg_filter_post(bot_msg)
 
-
-print(LW.time_checker())
+    time.sleep(0.10)
