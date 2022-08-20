@@ -88,7 +88,7 @@ class LW_strategy(common):
 
         self.target_price = round(target_price,4) #dataframe type to number
 
-        # ret_info = "***Target Price Set*** " + self.coinbot.name + " | HIGH:" + str(high_price) + " | LOW:" + str(low_price) + " | OPEN:" + str(close_price) + " | TARGET:" + str(self.target_price)
+
         ret_info = "**Target Price Set** " + self.coinbot.name + " | OPEN:" + str(close_price) + " | TARGET:" + str(self.target_price)
         return ret_info
 
