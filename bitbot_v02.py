@@ -44,6 +44,7 @@ for i in coin_range:
 bot_list = list(coin_range)
 for i in coin_range:
     bot_list[i] = strategies.LW_strategy(coin_list[i], KRW, K)
+    
 
 
 
@@ -62,10 +63,10 @@ while(1):
     else:
         for i in coin_range:
             bot_msg[i] = bot_list[i].loop()
-            time.sleep(0.05)
-
+            time.sleep(0.1)
+            
 
 
     slack.msg_filter_post(bot_msg)
 
-    time.sleep(0.10)
+    time.sleep(1)
