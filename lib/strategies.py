@@ -31,10 +31,8 @@ class moving_average(common):
     def get_ma(self, day_length):
         df = self.coinbot.get_old_data(day_length)
         ma = df['close'].rolling(window = day_length, min_periods = 1).mean()
-        #
-        # dftemp = df.iloc[0,:]
-        # print(dftemp)
-        # print(dftemp.name)
+
+
 
         return ma
 
@@ -59,11 +57,13 @@ class LW_strategy(common):
         super().__init__(coinbot, KRW)
         self.K = K
         self.buyflag = DOWN
-        self.buynumber = 0
+
 
     def prv_init(self):
         time.sleep(0.02) #stablizer
         self.update_df()
+        time.sleep(0.02)
+        self.buynumber = self.coinbot.get_balance()
         return self.set_target_price()
 
 
@@ -94,10 +94,10 @@ class LW_strategy(common):
 
 
     def loop(self):
-        
+
         if(self.time_checker()): #시장마감 및 재시작.
             #SELL
-            
+
             if(self.buyflag == UP): #if you bought anything,
                 self.get_current_price() #get
                 info = self.coinbot.sell_limit_order(self.current_price, self.buynumber) #sell everything with current price

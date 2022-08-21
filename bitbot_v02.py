@@ -9,13 +9,16 @@ from lib import slack_msg as sl
 import datetime
 import time
 
+
+
+
 UP = 1
 DOWN = 0
 INIT_FLAG = 0
 
 K = 0.5
 KRW = 10000 #5001 is too low
-
+syscount = 0
 
 
 token_list = token_info.get_tokens()
@@ -25,6 +28,7 @@ slack_token = token_list["slack_token"]
 
 
 slack = sl.slackbot("#bitbot", slack_token)
+slack_sys = sl.slackbot("server-check", slack_token)
 coins = ut.account(access, secret)
 upbit_account = coins.get_upbit_account()
 
@@ -44,7 +48,7 @@ for i in coin_range:
 bot_list = list(coin_range)
 for i in coin_range:
     bot_list[i] = strategies.LW_strategy(coin_list[i], KRW, K)
-    
+
 
 
 
@@ -64,13 +68,19 @@ while(1):
         for i in coin_range:
             bot_msg[i] = bot_list[i].loop()
             time.sleep(0.1)
-            
+
+
 
 
     slack.msg_filter_post(bot_msg)
- 
+
     print("\r", end="")
     print(datetime.datetime.now(), end="")
-    
+
     time.sleep(1)
-    
+
+    syscount = syscount + 1
+
+    if (syscount > (60*60)): #approx. an hour
+        slack_sys.post_message("server check")
+        syscount = 0
