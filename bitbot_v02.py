@@ -57,7 +57,7 @@ while(1):
 
         for i in coin_range:
             bot_msg[i] = bot_list[i].prv_init()
-            time.sleep(0.05)
+            time.sleep(0.1)
 
 
     else:
@@ -68,5 +68,9 @@ while(1):
 
 
     slack.msg_filter_post(bot_msg)
-
+ 
+    print("\r", end="")
+    print(datetime.datetime.now(), end="")
+    
     time.sleep(1)
+    

@@ -59,7 +59,7 @@ class LW_strategy(common):
         super().__init__(coinbot, KRW)
         self.K = K
         self.buyflag = DOWN
-
+        self.buynumber = 0
 
     def prv_init(self):
         time.sleep(0.02) #stablizer
@@ -94,10 +94,10 @@ class LW_strategy(common):
 
 
     def loop(self):
-
+        
         if(self.time_checker()): #시장마감 및 재시작.
             #SELL
-
+            
             if(self.buyflag == UP): #if you bought anything,
                 self.get_current_price() #get
                 info = self.coinbot.sell_limit_order(self.current_price, self.buynumber) #sell everything with current price
@@ -118,12 +118,12 @@ class LW_strategy(common):
             self.get_current_price()
 
             if (self.current_price >= self.target_price and self.buyflag == DOWN):
-            # if (1):
+            #if (1):
                 self.buynumber = self.coinbot.get_purchase_number(self.KRW) #get # of coins with krw.
                 info = self.coinbot.buy_limit_order(self.current_price, self.buynumber)
 
-                # info = self.coinbot.buy_limit_order(0.01, 500100)
-                # time.sleep(2)
+                #info = self.coinbot.buy_limit_order(0.01, 500100)
+                #time.sleep(2)
 
 
                 if (info == None):
