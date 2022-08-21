@@ -3,3 +3,5 @@ backtest.py
 pyqt.py
 example.py
 bbosong-server.pem
+nohup.out
+.example.py.swp
