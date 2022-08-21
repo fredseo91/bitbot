@@ -53,10 +53,11 @@ for i in coin_range:
 
 
 while(1):
-
     bot_msg = list(coin_range)
 
     if (INIT_FLAG == DOWN):
+
+        slack.post_message("initialize")
         INIT_FLAG = UP
 
         for i in coin_range:
@@ -81,6 +82,6 @@ while(1):
 
     syscount = syscount + 1
 
-    if (syscount > (60*60)): #approx. an hour
+    if (syscount > (60)): #approx. an hour
         slack_sys.post_message("server check")
         syscount = 0
