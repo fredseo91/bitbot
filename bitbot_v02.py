@@ -28,7 +28,7 @@ slack = sl.slackbot("#bitbot", slack_token)
 coins = ut.account(access, secret)
 upbit_account = coins.get_upbit_account()
 
-coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-CHZ"]
+coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-ETH"]
 
 coin_range = range(len(coin_name_list))
 coin_list = list(coin_range)
@@ -44,6 +44,7 @@ for i in coin_range:
 bot_list = list(coin_range)
 for i in coin_range:
     bot_list[i] = strategies.LW_strategy(coin_list[i], KRW, K)
+    
 
 
 
@@ -56,16 +57,20 @@ while(1):
 
         for i in coin_range:
             bot_msg[i] = bot_list[i].prv_init()
-            time.sleep(0.05)
+            time.sleep(0.1)
 
 
     else:
         for i in coin_range:
             bot_msg[i] = bot_list[i].loop()
-            time.sleep(0.05)
-
+            time.sleep(0.1)
+            
 
 
     slack.msg_filter_post(bot_msg)
-
-    time.sleep(0.10)
+ 
+    print("\r", end="")
+    print(datetime.datetime.now(), end="")
+    
+    time.sleep(1)
+    
