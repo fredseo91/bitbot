@@ -64,6 +64,7 @@ class LW_strategy(common):
         self.update_df()
         time.sleep(0.02)
         self.buynumber = self.coinbot.get_balance()
+        print(self.buynumber)
         return self.set_target_price()
 
 
