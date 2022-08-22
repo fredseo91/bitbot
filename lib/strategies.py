@@ -76,8 +76,8 @@ class LW_strategy(common):
 
         time_tomorrow = (self.dataframe.name + datetime.timedelta(2)) #one day + old days
 
-        time_now = datetime.datetime.today()
-
+        time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
+        
         if (time_now >= time_tomorrow): #if the data is older than one day
             return UP #let the loop know!
 
@@ -99,7 +99,7 @@ class LW_strategy(common):
 
 
     def loop(self):
-
+        
         if(self.time_checker()): #시장마감 및 재시작.
             #SELL
 
