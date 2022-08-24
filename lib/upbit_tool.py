@@ -125,7 +125,7 @@ class vol_breakout(coin):
 
 
         if (self.day_over_check()):
-            
+
             if (self.balance > 0):
                 self.recent_sell_info = self.sell_market_order(self.balance)
                 self.recent_info = self.recent_sell_info
@@ -137,7 +137,7 @@ class vol_breakout(coin):
                 return self.recent_info
 
         else:
-            if (self.current_price >= self.target_price and self.balance > 0):
+            if (self.current_price >= self.target_price and self.balance == 0):
                 self.recent_buy_info = self.buy_market_order(self.invest_money)
                 self.recent_info = self.recent_buy_info
                 return self.recent_info
