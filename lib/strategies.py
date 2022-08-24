@@ -7,11 +7,21 @@ UP = 1
 DOWN = 0
 INIT_FLAG = 0
 
+
 class common:
 
+    # self.coinbot : coinbot object
+    # self.purchase_info = [price, number]
+    # self.KRW : invested money
+    # self.current_price : current price of the coin
+    # self.dataframe = old data since 2 days ago
+
+
     def __init__(self, coinbot, KRW):
+
         self.coinbot = coinbot
         self.KRW = KRW
+        self.total_balance = self.coinbot.get_balance()
 
     def get_current_price(self):
         self.current_price =  self.coinbot.get_current_price()
@@ -60,15 +70,15 @@ class LW_strategy(common):
 
 
     def prv_init(self):
-        time.sleep(0.02) #stablizer
+
         self.update_df()
-        time.sleep(0.02)
-        self.buynumber = self.coinbot.get_balance()
-        if self.buynumber > 0 :
-            self.buyflag = UP
-        else:
-            self.buyflag = DOWN    
-        print(self.buynumber)
+
+        #
+        # if self.buynumber > 0 :
+        #     self.buyflag = UP
+        # else:
+        #     self.buyflag = DOWN
+
         return self.set_target_price()
 
 
@@ -77,7 +87,7 @@ class LW_strategy(common):
         time_tomorrow = (self.dataframe.name + datetime.timedelta(2)) #one day + old days
 
         time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
-        
+
         if (time_now >= time_tomorrow): #if the data is older than one day
             return UP #let the loop know!
 
@@ -90,7 +100,7 @@ class LW_strategy(common):
         close_price = self.dataframe['close']
 
         target_price =  close_price + (high_price - low_price) * self.K
-
+        self.open_price = close_price #for informational purpose
         self.target_price = round(target_price,4) #dataframe type to number
 
 
@@ -99,7 +109,7 @@ class LW_strategy(common):
 
 
     def loop(self):
-        
+
         if(self.time_checker()): #시장마감 및 재시작.
             #SELL
 
@@ -122,14 +132,13 @@ class LW_strategy(common):
 
             self.get_current_price()
 
+            # if (1):
             if (self.current_price >= self.target_price and self.buyflag == DOWN):
-            #if (1):
                 self.buynumber = self.coinbot.get_purchase_number(self.KRW) #get # of coins with krw.
-                info = self.coinbot.buy_limit_order(self.current_price, self.buynumber)
+                info = self.coinbot.buy_market_order(5000)
 
-                #info = self.coinbot.buy_limit_order(0.01, 500100)
-                #time.sleep(2)
 
+                print(self.coinbot.get_order_info(info['uuid']))
 
                 if (info == None):
                     info = "sys fail"
