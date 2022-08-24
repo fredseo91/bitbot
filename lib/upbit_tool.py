@@ -29,11 +29,13 @@ class coin(account):
         self.invest_money = invest_money
         self.event_flag = DOWN
 
+
     def get_balance(self):
         self.balance = self.upbit.get_balance(self.name)
 
     def get_current_price(self):
         self.current_price = float(pu.get_current_price(self.name))
+        return self.current_price
 
     def get_minimum_purchase_number(self):
         return (5001 / self.get_current_price())
@@ -76,11 +78,23 @@ class coin(account):
     def day_over_check(self):
         time_tomorrow = (self.dataframe.name + datetime.timedelta(2))
         time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
+        # time_now = datetime.datetime.today() #for local pc
+
         if (time_now >= time_tomorrow): #if the data is older than one day
             return UP #let the loop know!
 
         return DOWN
 
+    def uuid_decompose(self, uuid):
+        info = self.get_order_info(uuid)
+        info_uuid = uuid
+        if (info['side'] == 'bid'):
+            info_side = 'buying'
+        else :
+            info_side = 'selling'
+
+        total_info =  info_side + " : " + self.name + "\nprice: " + info['price'] + " | volume : " + info['volume']
+        return total_info
 
 class vol_breakout(coin):
 
@@ -125,11 +139,12 @@ class vol_breakout(coin):
 
 
         if (self.day_over_check()):
-
+        # if (1):
             if (self.balance > 0):
                 self.recent_sell_info = self.sell_market_order(self.balance)
-                self.recent_info = self.recent_sell_info
+                self.recent_info = self.uuid_decompose(self.recent_self_info['uuid'])
                 return self.recent_info
+
             else :
                 self.update_df()
                 self.set_target_price()
@@ -138,8 +153,17 @@ class vol_breakout(coin):
 
         else:
             if (self.current_price >= self.target_price and self.balance == 0):
-                self.recent_buy_info = self.buy_market_order(self.invest_money)
-                self.recent_info = self.recent_buy_info
+                self.purchase_num = self.get_purchase_number(self.invest_money)
+                self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
+                self.recent_info = self.uuid_decompose(self.recent_buy_info['uuid'])
+
+                time.sleep(5) #not a right system.
+                # when you buy stuff, need to have some time
+                # before the purchase is done.
+                # now, it's simply openloop time wait. need to change!
+
+                # self.recent_info = self.recent_buy_info
+
                 return self.recent_info
 
         return None
