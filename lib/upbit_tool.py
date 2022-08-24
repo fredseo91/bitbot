@@ -86,6 +86,7 @@ class vol_breakout(coin):
 
     def __init__(self, name, invest_money, K, upbit) :
         super().__init__(name, invest_money, upbit)
+        time.sleep(0.5)
         self.K = K
 
         self.init_flag = DOWN
@@ -148,7 +149,7 @@ class vol_breakout(coin):
 if __name__ == '__main__':
 
 
-    upbit_acc = account(access = "nZdpZ3R4qCI9G4rr3Nyxiwz4VO3p5TRp8d4kveLB", secret = "xGbxrd6afjbBAewiSlamOiQ5NGH2XSZjCQqsqx1T")
+    upbit_acc = account(access,  secret)
     acc = upbit_acc.get_upbit_account()
     coin0 = vol_breakout("KRW-ETC", 10000, 0.5, acc)
 
