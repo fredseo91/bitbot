@@ -37,7 +37,8 @@ slack.post_message("***bitbot initialized!***")
 timecount_old = datetime.datetime.now()
 
 while(1):
-    bot_msg = list(coin_range)
+    bot_msg = [None] * len(coin_name_list)
+
 
     for i in coin_range:
         bot_msg[i] = bot_list[i].loop()

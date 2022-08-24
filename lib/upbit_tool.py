@@ -86,7 +86,6 @@ class vol_breakout(coin):
 
     def __init__(self, name, invest_money, K, upbit) :
         super().__init__(name, invest_money, upbit)
-        time.sleep(0.5)
         self.K = K
 
         self.init_flag = DOWN
@@ -126,7 +125,7 @@ class vol_breakout(coin):
 
 
         if (self.day_over_check()):
-
+            
             if (self.balance > 0):
                 self.recent_sell_info = self.sell_market_order(self.balance)
                 self.recent_info = self.recent_sell_info
