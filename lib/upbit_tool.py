@@ -86,6 +86,7 @@ class vol_breakout(coin):
 
     def __init__(self, name, invest_money, K, upbit) :
         super().__init__(name, invest_money, upbit)
+        time.sleep(0.5)
         self.K = K
         self.init_flag = DOWN
 
