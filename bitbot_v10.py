@@ -22,7 +22,7 @@ slack_sys = sl.slackbot("server-check", slack_token)
 upbit_acc = ut.account(access, secret)
 account_info = upbit_acc.get_upbit_account()
 
-coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-ETH", "KRW-EOS, KRW-CHZ"]
+coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-ETH", "KRW-EOS", "KRW-CHZ"]
 coin_range = range(len(coin_name_list))
 coin_list = list(coin_range)
 
