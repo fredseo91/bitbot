@@ -26,24 +26,27 @@ coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-ETH", "KRW-EO
 coin_range = range(len(coin_name_list))
 coin_list = list(coin_range)
 
+trycoin = "KRW-DOGE"
 
 bot_list = list(coin_range)
 for i in coin_range:
     bot_list[i] = ut.vol_breakout(coin_name_list[i], invest_money, K, account_info )
 
+trybot = ut.moving_average(trycoin, 7000, account_info)
 
 slack.post_message("***bitbot initialized!***")
 
 timecount_old = datetime.datetime.now()
 
 while(1):
-    bot_msg = [None] * len(coin_name_list)
+    bot_msg = [None] * (len(coin_name_list) + 1)
 
 
     for i in coin_range:
         bot_msg[i] = bot_list[i].loop()
         time.sleep(0.1)
 
+    bot_msg[7] = trybot.loop()
 
     slack.msg_filter_post(bot_msg)
 
