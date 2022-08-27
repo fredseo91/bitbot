@@ -5,7 +5,7 @@ import pandas
 
 UP = 1
 DOWN = 0
-
+K = 0.5
 
 #need to fix the structure
 
@@ -105,7 +105,7 @@ class coin(account):
 
 class vol_breakout(coin):
 
-    def __init__(self, name, invest_money, K, upbit) :
+    def __init__(self, name, invest_money, upbit) :
         super().__init__(name, invest_money, upbit)
         self.K = K
 
@@ -140,10 +140,9 @@ class vol_breakout(coin):
 
 
         if (self.day_over_check()):
-        # if (1):
             if (self.balance > 0):
-                self.recent_sell_info = self.sell_market_order(self.balance)
-                self.recent_info = self.uuid_decompose(self.recent_self_info['uuid'])
+                self.recent_sell_info = self.sell_limit_order(self.current_price, self.balance)
+                self.recent_info = self.uuid_decompose(self.recent_sell_info['uuid'])
                 return self.recent_info
 
             else :
@@ -239,8 +238,10 @@ class moving_average(coin):
 
 
         elif (self.state == "dead cross" and self.balance > 0):
-            self.recent_sell_info = self.sell_market_order(self.balance)
-            self.recent_info = self.uuid_decompose(self.recent_self_info['uuid'])
+
+            self.recent_buy_info = self.sell_limit_order(self.current_price, self.balance)
+            self.recent_info = self.uuid_decompose(self.recent_sell_info['uuid'])
+
             return self.recent_info
 
 

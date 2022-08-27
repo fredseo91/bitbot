@@ -8,7 +8,6 @@ import time
 UP = 1
 DOWN = 0
 
-K = 0.5
 invest_money = 7000
 
 token_list = token_info.get_tokens()
@@ -22,34 +21,44 @@ slack_sys = sl.slackbot("server-check", slack_token)
 upbit_acc = ut.account(access, secret)
 account_info = upbit_acc.get_upbit_account()
 
-coin_name_list = ["KRW-ETC", "KRW-ADA", "KRW-XRP", "KRW-SOL", "KRW-ETH", "KRW-EOS", "KRW-CHZ"]
-coin_range = range(len(coin_name_list))
-coin_list = list(coin_range)
 
-trycoin = "KRW-DOGE"
 
-bot_list = list(coin_range)
-for i in coin_range:
-    bot_list[i] = ut.vol_breakout(coin_name_list[i], invest_money, K, account_info )
 
-trybot = ut.moving_average(trycoin, 7000, account_info)
+bot_dict = {
+    "KRW-ETC" : ut.vol_breakout,
+    "KRW-ADA" : ut.vol_breakout,
+    "KRW-XRP" : ut.vol_breakout,
+    "KRW-SOL" : ut.vol_breakout,
+    "KRW-ETH" : ut.vol_breakout,
+    "KRW-EOS" : ut.vol_breakout,
+    "KRW-CHZ" : ut.moving_average,
+    "KRW-DOGE": ut.moving_average,
+}
+
 
 slack.post_message("***bitbot initialized!***")
 
+bot_list = list()
+
+for coin in bot_dict:
+    msg = (coin + " : " + bot_dict[coin].__name__)
+    print(msg)
+    slack.post_message(msg)
+    bot_list.append(bot_dict[coin](coin, invest_money, account_info))
+
+
 timecount_old = datetime.datetime.now()
 
+
+
 while(1):
-    bot_msg = [None] * (len(coin_name_list) + 1)
+    bot_msg = list()
 
-
-    for i in coin_range:
-        bot_msg[i] = bot_list[i].loop()
+    for bot in bot_list:
+        bot_msg.append(bot.loop())
         time.sleep(0.1)
 
-    bot_msg[7] = trybot.loop()
-
     slack.msg_filter_post(bot_msg)
-
 
 
 #--------------------------------------------#
