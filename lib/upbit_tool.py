@@ -80,8 +80,8 @@ class coin(account):
 
     def day_over_check(self):
         time_tomorrow = (self.dataframe.name + datetime.timedelta(2))
-        # time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
-        time_now = datetime.datetime.today() #for local pc
+        time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
+        # time_now = datetime.datetime.today() #for local pc
 
         if (time_now >= time_tomorrow): #if the data is older than one day
             return UP #let the loop know!
