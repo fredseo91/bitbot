@@ -53,3 +53,49 @@ Traceback (most recent call last):
   File "/home/ubuntu/develop/bitbot/lib/upbit_tool.py", line 74, in update_df
     self.dataframe = temp.iloc[0,:]
 AttributeError: 'NoneType' object has no attribute 'iloc'
+**target price set : KRW-ETC
+open: 48010.0 | target: 50505.0
+**target price set : KRW-ADA
+open: 623.0 | target: 631.0
+**target price set : KRW-XRP
+open: 471.0 | target: 478.0
+**target price set : KRW-SOL
+open: 47560.0 | target: 48650.0
+**target price set : KRW-ETH
+open: 2255000.0 | target: 2304000.0
+**target price set : KRW-EOS
+open: 2410.0 | target: 2500.0
+**target price set : KRW-CHZ
+open: 329.0 | target: 349.0
+buying : KRW-DOGE
+price: 92.9 | volume : 75.34983853
+buying : KRW-DOGE
+price: 93 | volume : 75.2688172
+Traceback (most recent call last):
+  File "bitbot_v10.py", line 49, in <module>
+    bot_msg[7] = trybot.loop()
+  File "/home/ubuntu/develop/bitbot/lib/upbit_tool.py", line 243, in loop
+    self.recent_info = self.uuid_decompose(self.recent_self_info['uuid'])
+AttributeError: 'moving_average' object has no attribute 'recent_self_info'
+**target price set : KRW-ETC
+open: 48010.0 | target: 50505.0
+**target price set : KRW-ADA
+open: 623.0 | target: 631.0
+**target price set : KRW-XRP
+open: 471.0 | target: 478.0
+**target price set : KRW-SOL
+open: 47560.0 | target: 48650.0
+**target price set : KRW-ETH
+open: 2255000.0 | target: 2304000.0
+**target price set : KRW-EOS
+open: 2410.0 | target: 2500.0
+**target price set : KRW-CHZ
+open: 329.0 | target: 349.0
+buying : KRW-DOGE
+price: 93.8 | volume : 74.62686567
+Traceback (most recent call last):
+  File "bitbot_v10.py", line 46, in <module>
+    bot_msg[i] = bot_list[i].loop()
+  File "/home/ubuntu/develop/bitbot/lib/upbit_tool.py", line 146, in loop
+    self.recent_info = self.uuid_decompose(self.recent_self_info['uuid'])
+AttributeError: 'vol_breakout' object has no attribute 'recent_self_info'
