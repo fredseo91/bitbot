@@ -8,7 +8,7 @@ import time
 UP = 1
 DOWN = 0
 
-invest_money = 7000
+invest_money = 6000
 
 token_list = token_info.get_tokens()
 access = token_list["access"]
@@ -25,14 +25,17 @@ account_info = upbit_acc.get_upbit_account()
 
 
 bot_dict = {
-    "KRW-ETC" : ut.vol_breakout,
-    "KRW-ADA" : ut.vol_breakout,
-    "KRW-XRP" : ut.vol_breakout,
-    "KRW-SOL" : ut.vol_breakout,
+    "KRW-BTC" : ut.vol_breakout,
     "KRW-ETH" : ut.vol_breakout,
-    "KRW-EOS" : ut.vol_breakout,
-    "KRW-CHZ" : ut.moving_average,
+    "KRW-XRP" : ut.vol_breakout,
+    "KRW-ADA" : ut.vol_breakout,
+    "KRW-SOL" : ut.vol_breakout,
+
     "KRW-DOGE": ut.moving_average,
+    "KRW-DOT" : ut.moving_average,
+    "KRW-MATIC": ut.moving_average,
+    "KRW-AVAX": ut.moving_average,
+    "KRW-CHZ" : ut.moving_average,
 }
 
 
