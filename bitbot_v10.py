@@ -3,7 +3,7 @@ from lib import token_info
 from lib import slack_msg as sl
 import datetime
 import time
-
+import traceback
 
 UP = 1
 DOWN = 0
@@ -25,11 +25,11 @@ account_info = upbit_acc.get_upbit_account()
 
 
 bot_dict = {
-    "KRW-BTC" : ut.vol_breakout,
-    "KRW-ETH" : ut.vol_breakout,
-    "KRW-XRP" : ut.vol_breakout,
-    "KRW-ADA" : ut.vol_breakout,
-    "KRW-SOL" : ut.vol_breakout,
+    "KRW-BTC" : ut.moving_average,
+    "KRW-ETH" : ut.moving_average,
+    "KRW-XRP" : ut.moving_average,
+    "KRW-ADA" : ut.moving_average,
+    "KRW-SOL" : ut.moving_average,
 
     "KRW-DOGE": ut.moving_average,
     "KRW-DOT" : ut.moving_average,
@@ -39,15 +39,15 @@ bot_dict = {
 }
 
 
-slack.post_message("***bitbot initialized!***")
+slack.post_message_print("***bitbot initialized!***")
 
 bot_list = list()
-
+msg_total = ""
 for coin in bot_dict:
     msg = (coin + " : " + bot_dict[coin].__name__)
-    print(msg)
-    slack.post_message(msg)
+    msg_total = msg_total + "\n" + msg
     bot_list.append(bot_dict[coin](coin, invest_money, account_info))
+slack.post_message_print(msg_total)
 
 
 timecount_old = datetime.datetime.now()
@@ -55,19 +55,26 @@ timecount_old = datetime.datetime.now()
 
 
 while(1):
-    bot_msg = list()
+    try:
 
-    for bot in bot_list:
-        bot_msg.append(bot.loop())
-        time.sleep(0.1)
+        bot_msg = list()
 
-    slack.msg_filter_post(bot_msg)
+        for bot in bot_list:
+            bot_msg.append(bot.loop())
+            time.sleep(0.1)
+
+        slack.msg_filter_post(bot_msg)
+        
+
+    except Exception:
+        err = traceback.format_exc()
+        slack.post_message(err)
 
 
-#--------------------------------------------#
+    #--------------------------------------------#
+    finally:
+        timecount_now = datetime.datetime.now()
 
-    timecount_now = datetime.datetime.now()
-
-    if timecount_now > timecount_old + datetime.timedelta(seconds = 10):
-        slack_sys.post_message(timecount_now)
-        timecount_old = timecount_now
+        if timecount_now > timecount_old + datetime.timedelta(seconds = 1):
+            slack_sys.post_message(timecount_now)
+            timecount_old = timecount_now

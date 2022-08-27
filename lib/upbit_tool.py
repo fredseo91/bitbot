@@ -6,7 +6,6 @@ import pandas
 UP = 1
 DOWN = 0
 K = 0.5
-
 #need to fix the structure
 
 class account():
@@ -81,8 +80,8 @@ class coin(account):
 
     def day_over_check(self):
         time_tomorrow = (self.dataframe.name + datetime.timedelta(2))
-        time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
-        # time_now = datetime.datetime.today() #for local pc
+        # time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
+        time_now = datetime.datetime.today() #for local pc
 
         if (time_now >= time_tomorrow): #if the data is older than one day
             return UP #let the loop know!
@@ -98,8 +97,19 @@ class coin(account):
             info_side = 'selling'
 
         total_info =  info_side + " : " + self.name + "\nprice: " + info['price'] + " | volume : " + info['volume']
+
         return total_info
 
+
+    def buy_in_process(self):
+        self.get_current_price()
+        self.purchase_num = self.get_purchase_number(self.invest_money)
+        self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
+
+    def sell_in_process(self):
+        self.get_current_price()
+        self.get_balance() #user may have bought some manually.
+        self.recent_sell_info = self.sell_limit_order(self.current_price, self.balance)
 
 
 
@@ -141,8 +151,7 @@ class vol_breakout(coin):
 
         if (self.day_over_check()):
             if (self.balance > 0):
-                self.recent_sell_info = self.sell_limit_order(self.current_price, self.balance)
-                self.recent_info = self.uuid_decompose(self.recent_sell_info['uuid'])
+                self.sell_in_process()
                 return self.recent_info
 
             else :
@@ -153,9 +162,7 @@ class vol_breakout(coin):
 
         else:
             if (self.current_price >= self.target_price and self.balance == 0):
-                self.purchase_num = self.get_purchase_number(self.invest_money)
-                self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
-                self.recent_info = self.uuid_decompose(self.recent_buy_info['uuid'])
+                self.buy_in_process()
 
                 time.sleep(5) #not a right system.
                 # when you buy stuff, need to have some time
@@ -174,6 +181,7 @@ class moving_average(coin):
         super().__init__(name, invest_money, upbit)
 
         self.init_flag = DOWN
+        self.fsm_state = 'init'
 
     def get_df(self, max_length, type):
         self.df = self.get_old_data(max_length, type)
@@ -185,6 +193,8 @@ class moving_average(coin):
         return new_ma, old_ma
 
     def cross_detection(self, ma_1_length, ma_2_length):
+        self.get_df(50, "minute5") # parameters....!
+
         ma_1_new, ma_1_old = self.get_ma(ma_1_length)
         ma_2_new, ma_2_old = self.get_ma(ma_2_length)
         #ma_1 : smaller number
@@ -214,42 +224,158 @@ class moving_average(coin):
 
 
 
+    # def loop(self):
+    #     self.get_balance()
+    #     self.get_current_price()
+    #
+    #     self.get_df(100, "minute5")
+    #     self.cross_detection(5,20)
+    #     #temp algorithm
+    #
+    #     if (self.state == "golden cross" and self.balance == 0):
+    #         self.purchase_num = self.get_purchase_number(self.invest_money)
+    #         self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
+    #         self.recent_info = self.uuid_decompose(self.recent_buy_info['uuid'])
+    #
+    #         time.sleep(5) #not a right system.
+    #         # when you buy stuff, need to have some time
+    #         # before the purchase is done.
+    #         # now, it's simply openloop time wait. need to change!
+    #
+    #         # self.recent_info = self.recent_buy_info
+    #
+    #         return self.recent_info
+    #
+    #
+    #     elif (self.state == "dead cross" and self.balance > 0):
+    #
+    #         self.recent_buy_info = self.sell_limit_order(self.current_price, self.balance)
+    #         self.recent_info = self.uuid_decompose(self.recent_sell_info['uuid'])
+    #
+    #         return self.recent_info
+    #
+    #
+    #     else:
+    #         return None
+
     def loop(self):
+        #finite state machine
+        self.fsm_init()
+
+
+
+
+
+
+
+
+
+
+
+
+    def fsm_init(self):
+        self.fsm_testing(True)
+        return None
+
+
+    def fsm_check_balance(self):
         self.get_balance()
-        self.get_current_price()
+        test = (self.balance > 0)
+        self.fsm_testing(test)
+        if test == True:
+            msg = self.name + " balance : " + str(self.balance)
+            return msg
+        else:
+            return None
 
-        self.get_df(100, "minute5")
+    def fsm_wait_goldencross(self):
         self.cross_detection(5,20)
-        #temp algorithm
+        test = (self.state == 'golden cross')
+        self.fsm_testing(test)
+        if test == True:
+            msg = self.name + " : golden cross detected"
+            return msg
+        else:
+            return None
 
-        if (self.state == "golden cross" and self.balance == 0):
-            self.purchase_num = self.get_purchase_number(self.invest_money)
-            self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
-            self.recent_info = self.uuid_decompose(self.recent_buy_info['uuid'])
+    def fsm_buy_coins(self):
+        self.buy_in_process()
+        self.fsm_testing(True) #there is no test.
+        msg = self.name + "| buying at price of : " + str(self.current_price)
+        return msg
 
-            time.sleep(5) #not a right system.
-            # when you buy stuff, need to have some time
-            # before the purchase is done.
-            # now, it's simply openloop time wait. need to change!
+    def fsm_wait_for_bought(self):
+        info = self.upbit.get_order(self.name, state = 'wait')
+        test = (info == [])
+        self.fsm_testing(test)
 
-            # self.recent_info = self.recent_buy_info
-
-            return self.recent_info
-
-
-        elif (self.state == "dead cross" and self.balance > 0):
-
-            self.recent_buy_info = self.sell_limit_order(self.current_price, self.balance)
-            self.recent_info = self.uuid_decompose(self.recent_sell_info['uuid'])
-
-            return self.recent_info
+        return None
 
 
+    def fsm_wait_deadcross(self):
+        self.cross_detection(5,20)
+        test = (self.state == 'dead cross')
+        self.fsm_testing(test)
+
+        if test == True:
+            msg = self.name + " : dead cross detected"
+            return msg
         else:
             return None
 
 
 
+    def fsm_sell_coins(self):
+        info =  self.sell_in_process()
+        self.fsm_testing(True)
+        msg = self.name + "| selling at price of : " + str(self.current_price)
+        return msg
+
+    def fsm_wait_for_sold(self):
+        info = self.upbit.get_order(self.name, state = 'wait')
+        test = (info == [])
+        self.fsm_testing(test)
+        return None
+
+
+    def fsm_testing(self, test):
+        if test:
+            self.fsm_state = self.fsm_dict[self.fsm_state]['true']
+        else :
+            self.fsm_state = self.fsm_dict[self.fsm_state]['false']
+
+
+
+
+
+
+
+
+
+    fsm_dict = {
+        # function name, function true, function false
+
+        'init' : {'func_name' : fsm_init, 'true' : 'check_balance', 'false' : 'check_balance'},
+
+        'check_balance' : {'func_name' : fsm_check_balance, 'true' : 'wait_deadcross', 'false' : 'wait_goldencross'},
+        'wait_goldencross' : {'func_name' : fsm_wait_goldencross, 'true' : 'buy_coins', 'false' : 'wait_goldencross'},
+        'buy_coins' : {'func_name' : fsm_buy_coins, 'true' : 'wait_for_bought', 'false' : 'wait_for_bought'},
+        'wait_for_bought' : {'func_name' : fsm_wait_for_bought, 'true' : 'wait_deadcross', 'false' : 'wait_for_bought'},
+        'wait_deadcross' : {'func_name' : fsm_wait_deadcross, 'true' : 'sell_coins', 'false' : 'wait_deadcross'},
+        'sell_coins' : {'func_name' : fsm_sell_coins, 'true' : 'wait_for_sold', 'false' : 'wait_for_sold'},
+        'wait_for_sold' : {'func_name' : fsm_wait_for_sold, 'true' : 'check_balance', 'false' : 'wait_for_sold'}
+
+
+
+        # state machine structure
+        # 1. init : set up variables and do checkups <- removed. not necessary
+        # 2. check balance : check if there is balance. if not, wait for golden cross
+        # 3. wait_for_golden cross: if golden cross, buy coins.
+        # 4. wait for purchase done. if purchase is done, wait for dead cross to sell.
+        # 5. sell if dead cross. wait for purchase done.
+        # if sold, go to number 2.
+
+    }
 
 
 
@@ -258,12 +384,22 @@ if __name__ == '__main__':
 
     upbit_acc = account(access,  secret)
     acc = upbit_acc.get_upbit_account()
-    coin0 = moving_average("KRW-ETC", 10000,  acc)
+    coin0 = moving_average("KRW-ADA", 7000,  acc)
+
+    while(1):
+        coin0.loop()
+        time.sleep(0.1)
 
 
-    coin0.get_df(10, "minute5")
-
-    msg = coin0.cross_detection(5,20)
 
 
-    print(msg)
+
+
+
+
+
+
+
+
+
+#get order, done info : {'uuid': '6e42a2e9-6db8-42a5-89e0-cae94b1d8063', 'side': 'bid', 'ord_type': 'limit', 'price': '57300', 'state': 'done', 'market': 'KRW-ETC', 'created_at': '2022-08-15T10:11:35+09:00', 'volume': '0.08727748', 'remaining_volume': '0', 'reserved_fee': '2.500499802', 'remaining_fee': '0', 'paid_fee': '2.500499802', 'locked': '0', 'executed_volume': '0.08727748', 'trades_count': 1}]

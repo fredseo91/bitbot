@@ -15,16 +15,24 @@ class slackbot:
             data={"channel": self.channel,"text": text}
 
         )
+
         return response
 
-    def msg_filter_post(self, msg_list):
+    def post_message_print(self, text):
+        if text != "":
+            print(text)
+            self.post_message(text)
 
+
+    def msg_filter_post(self, msg_list):
+        msg_total = ""
         for msg in msg_list :
 
             if msg != None:
-                print(msg)
-                self.post_message(str(msg))
+                msg = str(msg)
+                msg_total = msg_total + "\n" + msg
 
+        self.post_message_print(msg_total)
 
 
 
