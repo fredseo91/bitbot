@@ -64,10 +64,11 @@ while(1):
             time.sleep(0.1)
 
         slack.msg_filter_post(bot_msg)
-        
+
 
     except Exception:
         err = traceback.format_exc()
+        print(err)
         slack.post_message(err)
 
 

@@ -260,10 +260,10 @@ class moving_average(coin):
 
     def loop(self):
         #finite state machine
-        self.fsm_init()
 
 
-
+        self.fsm_dict[self.fsm_state]['func_name'](self)
+        # print(self.fsm_state)
 
 
 
@@ -304,6 +304,7 @@ class moving_average(coin):
         msg = self.name + "| buying at price of : " + str(self.current_price)
         return msg
 
+
     def fsm_wait_for_bought(self):
         info = self.upbit.get_order(self.name, state = 'wait')
         test = (info == [])
@@ -330,6 +331,7 @@ class moving_average(coin):
         self.fsm_testing(True)
         msg = self.name + "| selling at price of : " + str(self.current_price)
         return msg
+
 
     def fsm_wait_for_sold(self):
         info = self.upbit.get_order(self.name, state = 'wait')
