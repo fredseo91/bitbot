@@ -301,8 +301,8 @@ class moving_average(coin):
     def fsm_buy_coins(self):
         self.buy_in_process()
         self.fsm_testing(True) #there is no test.
-        msg = self.name + "| buying at price of : " + str(self.current_price)
-        return msg
+        # msg = self.name + "| buying at price of : " + str(self.current_price)
+        return self.recent_info
 
 
     def fsm_wait_for_bought(self):
@@ -329,8 +329,8 @@ class moving_average(coin):
     def fsm_sell_coins(self):
         info =  self.sell_in_process()
         self.fsm_testing(True)
-        msg = self.name + "| selling at price of : " + str(self.current_price)
-        return msg
+        # msg = self.name + "| selling at price of : " + str(self.current_price)
+        return self.recent_info
 
 
     def fsm_wait_for_sold(self):
