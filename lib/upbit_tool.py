@@ -193,7 +193,7 @@ class moving_average(coin):
         return new_ma, old_ma
 
     def cross_detection(self, ma_1_length, ma_2_length):
-        self.get_df(50, "minute5") # parameters....!
+        self.get_df(50, "minute15") # parameters....!
 
         ma_1_new, ma_1_old = self.get_ma(ma_1_length)
         ma_2_new, ma_2_old = self.get_ma(ma_2_length)
@@ -302,7 +302,7 @@ class moving_average(coin):
         self.buy_in_process()
         self.fsm_testing(True) #there is no test.
         # msg = self.name + "| buying at price of : " + str(self.current_price)
-        return self.recent_info
+        return self.recent_buy_info
 
 
     def fsm_wait_for_bought(self):
@@ -330,7 +330,7 @@ class moving_average(coin):
         info =  self.sell_in_process()
         self.fsm_testing(True)
         # msg = self.name + "| selling at price of : " + str(self.current_price)
-        return self.recent_info
+        return self.recent_sell_info
 
 
     def fsm_wait_for_sold(self):
