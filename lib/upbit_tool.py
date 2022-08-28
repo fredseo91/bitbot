@@ -314,7 +314,7 @@ class moving_average(coin):
 
 
     def fsm_wait_deadcross(self):
-        self.cross_detection(5,20)
+        self.cross_detection(5,10)
         test = (self.state == 'dead cross')
         self.fsm_testing(test)
 
