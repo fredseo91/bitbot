@@ -102,14 +102,14 @@ class coin(account):
 
 
     def buy_in_process(self):
-        self.get_current_price()
-        self.purchase_num = self.get_purchase_number(self.invest_money)
-        self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
+        # self.get_current_price()
+        # self.purchase_num = self.get_purchase_number(self.invest_money)
+        self.recent_buy_info = self.buy_market_order(self.invest_money)
 
     def sell_in_process(self):
-        self.get_current_price()
-        self.get_balance() #user may have bought some manually.
-        self.recent_sell_info = self.sell_limit_order(self.current_price, self.balance)
+        # self.get_current_price()
+        # self.get_balance() #user may have bought some manually.
+        self.recent_sell_info = self.sell_market_order(self.balance)
 
 
 
@@ -262,8 +262,8 @@ class moving_average(coin):
         #finite state machine
 
 
-        self.fsm_dict[self.fsm_state]['func_name'](self)
-        # print(self.fsm_state)
+        return self.fsm_dict[self.fsm_state]['func_name'](self)
+        # print(self.name, self.fsm_state)
 
 
 
