@@ -2,6 +2,8 @@ import pyupbit as pu
 import time
 import datetime
 import pandas
+import os
+
 
 UP = 1
 DOWN = 0
@@ -28,7 +30,7 @@ class coin(account):
         self.upbit = upbit
         self.invest_money = invest_money
         self.event_flag = DOWN
-
+        self.user = os.getlogin()
 
     def get_balance(self):
         self.balance = self.upbit.get_balance(self.name)
@@ -80,8 +82,10 @@ class coin(account):
 
     def day_over_check(self):
         time_tomorrow = (self.dataframe.name + datetime.timedelta(2))
-        time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
-        # time_now = datetime.datetime.today() #for local pc
+        if (self.user == jseo):
+            time_now = datetime.datetime.today() #for local pc
+        else:
+            time_now = datetime.datetime.today() + datetime.timedelta(hours = 9)
 
         if (time_now >= time_tomorrow): #if the data is older than one day
             return UP #let the loop know!
@@ -197,11 +201,17 @@ class moving_average(coin):
         new_ma = self.df['close'].rolling(window = length, min_periods = 1).mean().iloc[-1]
         return new_ma, old_ma
 
+    def get_ema(self, length):
+        old_ema = self.df['close'].ewm(length).mean().iloc[-2]
+        new_ema = self.df['close'].ewm(length).mean().iloc[-1]
+
+        return new_ema, old_ema
+
     def cross_detection(self, ma_1_length, ma_2_length):
         self.get_df(50, "minute15") # parameters....!
 
-        ma_1_new, ma_1_old = self.get_ma(ma_1_length)
-        ma_2_new, ma_2_old = self.get_ma(ma_2_length)
+        ma_1_new, ma_1_old = self.get_ema(ma_1_length)
+        ma_2_new, ma_2_old = self.get_ema(ma_2_length)
         #ma_1 : smaller number
         #ma_2 : bigger number
 
@@ -228,40 +238,6 @@ class moving_average(coin):
         return self.state
 
 
-
-    # def loop(self):
-    #     self.get_balance()
-    #     self.get_current_price()
-    #
-    #     self.get_df(100, "minute5")
-    #     self.cross_detection(5,20)
-    #     #temp algorithm
-    #
-    #     if (self.state == "golden cross" and self.balance == 0):
-    #         self.purchase_num = self.get_purchase_number(self.invest_money)
-    #         self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
-    #         self.recent_info = self.uuid_decompose(self.recent_buy_info['uuid'])
-    #
-    #         time.sleep(5) #not a right system.
-    #         # when you buy stuff, need to have some time
-    #         # before the purchase is done.
-    #         # now, it's simply openloop time wait. need to change!
-    #
-    #         # self.recent_info = self.recent_buy_info
-    #
-    #         return self.recent_info
-    #
-    #
-    #     elif (self.state == "dead cross" and self.balance > 0):
-    #
-    #         self.recent_buy_info = self.sell_limit_order(self.current_price, self.balance)
-    #         self.recent_info = self.uuid_decompose(self.recent_sell_info['uuid'])
-    #
-    #         return self.recent_info
-    #
-    #
-    #     else:
-    #         return None
 
     def loop(self):
         #finite state machine
