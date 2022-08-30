@@ -126,9 +126,9 @@ class moving_average(up.coin):
 
     def fsm_sell_coins(self):
         self.get_current_price()
-        if (self.current_price < self.invest_money):
+        if (self.current_price < self.bought_price):
             self.fsm_state = 'wait_deadcross'
-            msg = "the price is lower than invested. keep waiting."
+            msg = "the price is lower than purchased. keep waiting."
             return msg
         else:
             info =  self.sell_in_process()

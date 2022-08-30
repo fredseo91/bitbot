@@ -7,6 +7,8 @@ import datetime
 import time
 import traceback
 
+MODE = "REAL"
+# MODE = "VIRTUAL"
 UP = 1
 DOWN = 0
 
@@ -20,8 +22,13 @@ slack_token = token_list["slack_token"]
 slack = sl.slackbot("#bitbot", slack_token)
 slack_sys = sl.slackbot("server-check", slack_token)
 
-upbit_acc = ut.account(access, secret)
-account_info = upbit_acc.get_upbit_account()
+if MODE == "REAL":
+    upbit_acc = ut.account(access, secret)
+    account_info = upbit_acc.get_upbit_account()
+
+elif MODE == "VIRTUAL":
+    upbit_acc = ut.virtual_account(6000)
+    account_info = upbit_acc.get_upbit_account()
 
 
 

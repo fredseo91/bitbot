@@ -23,6 +23,61 @@ class account():
     def get_upbit_account(self):
         return self.upbit
 
+class virtual_account():
+    def __init__(self, wallet):
+        self.balance = 0
+        self.wallet = wallet
+
+    def get_upbit_account(self):
+        return self
+
+
+    def get_balance(self, name):
+        return self.balance
+
+    def prv_get_current_price(self, name):
+        return float(pu.get_current_price(name))
+
+    def buy_limit_order(self, name, price, number):
+        purchased = price*number
+        spent = price*1.0005 * number
+        self.wallet -= spent
+        self.balance += purchased
+        msg = name + " | purhcased : " + purchased
+        return msg
+
+    def buy_market_order(self, name, money):
+        price = self.prv_get_current_price(name)
+        number = money / price
+
+        spent = price*1.0005 * number
+        self.wallet -= spent
+        self.balance += purchased
+        msg = name + " | purhcased : " + purchased
+        return msg
+
+    def sell_limit_order(self, name, price, num):
+        sold = price*number
+        earned = price*0.9995 * number
+        self.wallet += earned
+        self.balance -= sold
+        msg = name + " | sold : " + purchased
+        return msg
+
+    def sell_market_order(self, name, money):
+        price = self.prv_get_current_price(name)
+        number = money / price
+
+        sold = price*number
+        earned = price*0.9995 * number
+        self.wallet += earned
+        self.balance -= sold
+        msg = name + " | sold : " + purchased
+        return msg
+
+    def get_order(self, uiud):
+        return []
+
 class coin(account):
 
     def __init__(self, name, invest_money, upbit):
@@ -39,9 +94,6 @@ class coin(account):
         self.current_price = float(pu.get_current_price(self.name))
         return self.current_price
 
-    def get_minimum_purchase_number(self):
-        return (5001 / self.get_current_price())
-
     def get_purchase_number(self, money):
         return (money / self.get_current_price())
 
@@ -49,8 +101,8 @@ class coin(account):
         buy_info = self.upbit.buy_limit_order(self.name, price, number)
         return buy_info
 
-    def buy_market_order(self, price):
-        buy_info = self.upbit.buy_market_order(self.name, price)
+    def buy_market_order(self, money):
+        buy_info = self.upbit.buy_market_order(self.name, money)
         return buy_info
 
     def sell_limit_order(self, price, num):
@@ -109,7 +161,7 @@ class coin(account):
         self.get_current_price()
         self.purchase_num = self.get_purchase_number(self.invest_money)
         self.recent_buy_info = self.buy_limit_order(self.current_price, self.purchase_num)
-
+        self.purchased_price = self.current_price
         # self.recent_buy_info = self.buy_market_order(self.invest_money)
 
     def sell_in_process(self):
@@ -122,67 +174,67 @@ class coin(account):
 
 
 
-class vol_breakout(coin):
-
-    def __init__(self, name, invest_money, upbit) :
-        super().__init__(name, invest_money, upbit)
-        self.K = K
-
-        self.init_flag = DOWN
-
-    def set_target_price(self):
-
-        high_price = self.dataframe['high']
-        low_price = self.dataframe['low']
-        close_price = self.dataframe['close']
-
-        target_price =  close_price + (high_price - low_price) * self.K
-        self.open_price = close_price #for informational purpose
-        self.target_price = round(target_price,4) #dataframe type to number
-
-
-        # ret_info = "**Target Price Set** " + self.coinbot.name + " | OPEN:" + str(close_price) + " | TARGET:" + str(self.target_price)
-        # return ret_info
-
-    def loop(self):
-        #If event_flag is up, the main host will publish info to the user.
-        #and the main host will put the flag down after the publish.
-        self.get_balance()
-        self.get_current_price()
-
-        if (self.init_flag == DOWN):
-            self.init_flag = UP
-            self.update_df()
-            self.set_target_price()
-            self.recent_info = "**target price set : " + self.name + "\nopen: " + str(self.open_price) + " | target: " + str(self.target_price)
-            return self.recent_info
-
-
-        if (self.day_over_check()):
-            if (self.balance > 0):
-                self.sell_in_process()
-                return self.recent_info
-
-            else :
-                self.update_df()
-                self.set_target_price()
-                self.recent_info = "**target price set : " + self.name + "\nopen: " + str(self.open_price) + " | target: " + str(self.target_price)
-                return self.recent_info
-
-        else:
-            if (self.current_price >= self.target_price and self.balance == 0):
-                self.buy_in_process()
-
-                time.sleep(5) #not a right system.
-                # when you buy stuff, need to have some time
-                # before the purchase is done.
-                # now, it's simply openloop time wait. need to change!
-
-                # self.recent_info = self.recent_buy_info
-
-                return self.recent_info
-
-        return None
+# class vol_breakout(coin):
+#
+#     def __init__(self, name, invest_money, upbit) :
+#         super().__init__(name, invest_money, upbit)
+#         self.K = K
+#
+#         self.init_flag = DOWN
+#
+#     def set_target_price(self):
+#
+#         high_price = self.dataframe['high']
+#         low_price = self.dataframe['low']
+#         close_price = self.dataframe['close']
+#
+#         target_price =  close_price + (high_price - low_price) * self.K
+#         self.open_price = close_price #for informational purpose
+#         self.target_price = round(target_price,4) #dataframe type to number
+#
+#
+#         # ret_info = "**Target Price Set** " + self.coinbot.name + " | OPEN:" + str(close_price) + " | TARGET:" + str(self.target_price)
+#         # return ret_info
+#
+#     def loop(self):
+#         #If event_flag is up, the main host will publish info to the user.
+#         #and the main host will put the flag down after the publish.
+#         self.get_balance()
+#         self.get_current_price()
+#
+#         if (self.init_flag == DOWN):
+#             self.init_flag = UP
+#             self.update_df()
+#             self.set_target_price()
+#             self.recent_info = "**target price set : " + self.name + "\nopen: " + str(self.open_price) + " | target: " + str(self.target_price)
+#             return self.recent_info
+#
+#
+#         if (self.day_over_check()):
+#             if (self.balance > 0):
+#                 self.sell_in_process()
+#                 return self.recent_info
+#
+#             else :
+#                 self.update_df()
+#                 self.set_target_price()
+#                 self.recent_info = "**target price set : " + self.name + "\nopen: " + str(self.open_price) + " | target: " + str(self.target_price)
+#                 return self.recent_info
+#
+#         else:
+#             if (self.current_price >= self.target_price and self.balance == 0):
+#                 self.buy_in_process()
+#
+#                 time.sleep(5) #not a right system.
+#                 # when you buy stuff, need to have some time
+#                 # before the purchase is done.
+#                 # now, it's simply openloop time wait. need to change!
+#
+#                 # self.recent_info = self.recent_buy_info
+#
+#                 return self.recent_info
+#
+#         return None
 
 
 
@@ -190,17 +242,20 @@ class vol_breakout(coin):
 if __name__ == '__main__':
 
 
-    upbit_acc = account(access,  secret)
-    acc = upbit_acc.get_upbit_account()
-    coin0 = moving_average("KRW-ADA", 7000,  acc)
+    # upbit_acc = account(access,  secret)
+    # acc = upbit_acc.get_upbit_account()
+    # coin0 = moving_average("KRW-ADA", 7000,  acc)
+    #
+    # while(1):
+    #     coin0.loop()
+    #     time.sleep(0.1)
+    #
+    #
 
-    while(1):
-        coin0.loop()
-        time.sleep(0.1)
+    vir = virtual_account(6000)
+    acc = vir.get_upbit_account()
 
-
-
-
+    # print(acc.get_balance(""))
 
 
 
