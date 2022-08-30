@@ -63,7 +63,7 @@ while(1):
 
         for bot in bot_list:
             bot_msg.append(bot.loop())
-            time.sleep(0.01)
+            time.sleep(0.05)
 
         slack.msg_filter_post(bot_msg)
 
