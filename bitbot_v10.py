@@ -63,7 +63,7 @@ while(1):
 
         for bot in bot_list:
             bot_msg.append(bot.loop())
-            time.sleep(0.1)
+            time.sleep(0.01)
 
         slack.msg_filter_post(bot_msg)
 
@@ -78,6 +78,6 @@ while(1):
     finally:
         timecount_now = datetime.datetime.now()
 
-        if timecount_now > timecount_old + datetime.timedelta(seconds = 1):
+        if timecount_now > timecount_old + datetime.timedelta(seconds = 0.1):
             slack_sys.post_message(timecount_now)
             timecount_old = timecount_now

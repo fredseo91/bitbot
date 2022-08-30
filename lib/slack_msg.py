@@ -1,6 +1,8 @@
 import requests
 import time
+import datetime
 OK = 0
+
 
 class slackbot:
 
@@ -37,7 +39,8 @@ class slackbot:
 
 
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
 
-    # slack = slackbot("#bitbot", token)
-    # slack.post_message("KRW-AHT | HIGH:9.7 | LOW:9.52 | OPEN:9.59 | TARGET:9.716")
+    while(1):
+        slack = slackbot("#bitbot", token)
+        slack.post_message(datetime.datetime.now())
