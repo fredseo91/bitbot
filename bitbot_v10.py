@@ -1,6 +1,8 @@
 from lib import upbit_tool as ut
 from lib import token_info
 from lib import slack_msg as sl
+from lib import moving_average as mv
+
 import datetime
 import time
 import traceback
@@ -25,17 +27,17 @@ account_info = upbit_acc.get_upbit_account()
 
 
 bot_dict = {
-    "KRW-BTC" : ut.moving_average,
-    "KRW-ETH" : ut.moving_average,
-    "KRW-XRP" : ut.moving_average,
-    "KRW-ADA" : ut.moving_average,
-    "KRW-SOL" : ut.moving_average,
+    "KRW-BTC" : mv.moving_average,
+    "KRW-ETH" : mv.moving_average,
+    "KRW-XRP" : mv.moving_average,
+    "KRW-ADA" : mv.moving_average,
+    "KRW-SOL" : mv.moving_average,
 
-    "KRW-DOGE": ut.moving_average,
-    "KRW-DOT" : ut.moving_average,
-    "KRW-MATIC": ut.moving_average,
-    "KRW-AVAX": ut.moving_average,
-    "KRW-CHZ" : ut.moving_average,
+    "KRW-DOGE": mv.moving_average,
+    "KRW-DOT" : mv.moving_average,
+    "KRW-MATIC": mv.moving_average,
+    "KRW-AVAX": mv.moving_average,
+    "KRW-CHZ" : mv.moving_average,
 }
 
 
