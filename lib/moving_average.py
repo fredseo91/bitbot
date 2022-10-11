@@ -64,10 +64,9 @@ class moving_average(up.coin):
 
     def loop(self):
         #finite state machine
-
-
+                # return 0
+        print(self.name, self.fsm_state)
         return self.fsm_dict[self.fsm_state]['func_name'](self)
-        # print(self.name, self.fsm_state)
 
 
 
@@ -126,7 +125,8 @@ class moving_average(up.coin):
 
     def fsm_sell_coins(self):
         self.get_current_price()
-        if (self.current_price < self.bought_price):
+        price_estimate = self.balance / 6003 # temporary
+        if (self.current_price < price_estimate):
             self.fsm_state = 'wait_deadcross'
             msg = "the price is lower than purchased. keep waiting."
             return msg

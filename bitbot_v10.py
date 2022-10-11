@@ -17,6 +17,7 @@ invest_money = 6000
 token_list = token_info.get_tokens()
 access = token_list["access"]
 secret = token_list["secret"]
+
 slack_token = token_list["slack_token"]
 
 slack = sl.slackbot("#bitbot", slack_token)
