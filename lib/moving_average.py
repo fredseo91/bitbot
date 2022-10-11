@@ -46,7 +46,7 @@ class moving_average(up.coin):
 
         old_compare = ma_1_old - ma_2_old
         new_compare = ma_1_new - ma_2_new
-
+        # print(self.name, old_compare, new_compare )
         if (old_compare < 0 and new_compare >= 0):
             self.state = "golden cross"
         elif (old_compare > 0 and new_compare <= 0):
@@ -57,7 +57,7 @@ class moving_average(up.coin):
             self.state = "down state"
         else:
             self.state = "none"
-
+        # print(self.name, self.state)
         return self.state
 
 
@@ -77,6 +77,8 @@ class moving_average(up.coin):
 
     def fsm_check_balance(self):
         self.get_balance()
+        # self.get_current_price()
+        # print(self.balance,self.current_price)
         test = (self.balance > 0)
         self.fsm_testing(test)
         if test == True:
@@ -125,7 +127,7 @@ class moving_average(up.coin):
 
     def fsm_sell_coins(self):
         self.get_current_price()
-        price_estimate = self.balance / 6003 # temporary
+        price_estimate = 6000/self.balance # temporary
         if (self.current_price < price_estimate):
             self.fsm_state = 'wait_deadcross'
             msg = "the price is lower than purchased. keep waiting."
