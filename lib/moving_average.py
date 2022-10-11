@@ -127,6 +127,7 @@ class moving_average(up.coin):
 
     def fsm_sell_coins(self):
         self.get_current_price()
+        self.get_balance()
         price_estimate = 6000/self.balance # temporary
         if (self.current_price < price_estimate):
             self.fsm_state = 'wait_deadcross'
